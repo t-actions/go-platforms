@@ -1,0 +1,23 @@
+name: Go Platforms
+author: Tanyi Chen
+description: Generate Cross Platforms Matrix for Golang Build
+inputs:
+  platforms:
+    description: All platforms for building, default is output of `go tool dist list`
+    requried: false
+outputs:
+  matrix:
+    description: matrix for golang build, include goos, goarch, goarm
+    value: ${{ steps.platforms.outputs.matrix }}
+runs:
+  using: composite
+  steps:
+    - id: platforms
+      name: Generate all golang build matrix
+      run: |
+        set -x
+        matrix=$(python3 $GITHUB_ACTION_PATH/generate_platforms.py)
+        echo "::set-output name=matrix::$matrix"
+      shell: bash
+      env:
+        PLATFORMS: ${{ inputs.platforms }}
